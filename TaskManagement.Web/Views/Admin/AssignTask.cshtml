@@ -1,0 +1,41 @@
+﻿@using TaskManagement.Web.Models.DTOs
+@{
+    ViewData["Title"] = "Assign Task";
+    var users = ViewBag.Users as List<UserDto>;
+    var tasks = ViewBag.Tasks as List<TaskDto>;
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Assign Task</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="AssignTask" method="post">
+                <div class="mb-3">
+                    <label class="form-label">Task</label>
+                    <select class="form-select" name="taskId" required>
+                        <option value="">-- Select Task --</option>
+                        @foreach (var task in tasks ?? new List<TaskDto>())
+                        {
+                            <option value="@task.Id">@task.TaskTitle</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">User</label>
+                    <select class="form-select" name="userId" required>
+                        <option value="">-- Select User --</option>
+                        @foreach (var user in users ?? new List<UserDto>())
+                        {
+                            <option value="@user.Id">@user.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Assign Task</button>
+            </form>
+        </div>
+    </div>
+</div>

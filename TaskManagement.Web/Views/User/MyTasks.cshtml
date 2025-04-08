@@ -1,0 +1,63 @@
+﻿<div class="container mt-5">
+    <h2 class="mb-4 text-primary">Assigned Tasks Lists</h2>
+
+    <!-- Pending Tasks -->
+    <div class="mb-5">
+        <h4 class="text-warning">Pending Tasks</h4>
+        @if (ViewBag.PendingTasks != null && ViewBag.PendingTasks.Count > 0)
+        {
+            <div class="row row-cols-1 row-cols-md-2 g-3">
+                @foreach (var task in ViewBag.PendingTasks)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm border-start border-4 border-warning">
+                            <div class="card-body">
+                                <h5 class="card-title">@task.TaskTitle</h5>
+                                <p class="card-text">
+                                    <strong>Due:</strong> @task.DueDate.ToShortDateString()
+                                </p>
+                                <form asp-action="UpdateStatus" method="post" class="d-flex align-items-center gap-2">
+                                    <input type="hidden" name="taskId" value="@task.TaskId" />
+                                    <select name="newStatus" class="form-select form-select-sm" style="width: 150px;">
+                                        <option value="Pending" selected="@("Pending" == task.Status)">Pending</option>
+                                        <option value="Completed" selected="@("Completed" == task.Status)">Completed</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-success">Update</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No pending tasks available.</p>
+        }
+    </div>
+
+    <!-- Completed Tasks -->
+    <div>
+        <h4 class="text-success">Completed Tasks</h4>
+        @if (ViewBag.CompletedTasks != null && ViewBag.CompletedTasks.Count > 0)
+        {
+            <div class="row row-cols-1 row-cols-md-2 g-3">
+                @foreach (var task in ViewBag.CompletedTasks)
+                {
+                    <div class="col">
+                        <div class="card shadow-sm border-start border-4 border-success">
+                            <div class="card-body">
+                                <h5 class="card-title">@task.TaskTitle</h5>
+                                <p class="card-text text-success fw-bold">Completed ✅</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No completed tasks available.</p>
+        }
+    </div>
+</div>

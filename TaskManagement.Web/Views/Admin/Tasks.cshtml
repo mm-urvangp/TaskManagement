@@ -1,0 +1,23 @@
+﻿@using TaskManagement.Web.Models.DTOs
+@model List<TaskDto>
+<h2>Tasks</h2>
+<a href="/Admin/CreateTask">Create New Task</a>
+<table class="table">
+    <thead>
+        <tr><th>Title</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.TaskTitle</td>
+                <td>@task.Description</td>
+                <td>@task.Status</td>
+                <td>
+                    <a href="/Admin/EditTask/@task.Id">Edit</a> |
+                    <a href="/Admin/DeleteTask/@task.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
