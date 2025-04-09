@@ -37,11 +37,14 @@ namespace TaskManagement.Web.Controllers
 
             var tasks = await _apiService.GetAsync<List<TaskViewModel>>(apiUrl);
 
-            var pending = tasks.Where(t => t.Status == "Pending").ToList();
-            var completed = tasks.Where(t => t.Status == "Completed").ToList();
-
-            ViewBag.PendingTasks = pending;
-            ViewBag.CompletedTasks = completed;
+            if (tasks != null && tasks.Count > 0)
+            {
+                var pending = tasks.Where(t => t.Status == "Pending").ToList();
+                var completed = tasks.Where(t => t.Status == "Completed").ToList();
+             
+                ViewBag.PendingTasks = pending;
+                ViewBag.CompletedTasks = completed;
+            }
 
             ViewBag.Role = HttpContext.Session.GetString("Role");
             return View(tasks);

@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagement.API.Models.DTOs;
 using TaskManagement.API.Models;
 using TaskManagement.API.Repositories.IRepositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TaskManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _repo;
