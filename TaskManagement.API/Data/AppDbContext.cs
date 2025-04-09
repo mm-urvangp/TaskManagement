@@ -34,6 +34,20 @@ namespace TaskManagement.API.Data
                 .WithMany()
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserModel>().HasData(
+                new UserModel
+                {
+                    Id = 1,
+                    Name = "Admin",
+                    Email = "admin@gmail.com",
+                    Password = "Admin@123",
+                    Gender = "Male",
+                    Mobile = "9999999999",
+                    DateOfBirth = new DateTime(2025,09,04),
+                    Role = "Admin"
+                }
+            );
         }
     }
 }

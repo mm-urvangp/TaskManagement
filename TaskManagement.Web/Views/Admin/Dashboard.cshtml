@@ -1,7 +1,58 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
+    var role = ViewBag.Role;
 }
-<h2>Admin Dashboard</h2>
-<p><a href="/Admin/Tasks">Manage Tasks</a></p>
-<p><a href="/Admin/Users">View Users</a></p>
-<p><a href="/Admin/AssignTask">Assign Tasks</a></p>
+
+@if (role != null && role == "Admin")
+{
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card border-start border-primary border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Tasks</h5>
+                    <p class="card-text">Create, update, or delete tasks for the team.</p>
+                    <a href="/Admin/Tasks" class="btn btn-primary">Go to Tasks</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-start border-success border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">View Users</h5>
+                    <p class="card-text">See a list of all registered users in the system.</p>
+                    <a href="/Admin/Users" class="btn btn-success">View Users</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-start border-warning border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Assign Tasks</h5>
+                    <p class="card-text">Assign new or existing tasks to users.</p>
+                    <a href="/Admin/AssignTask" class="btn btn-warning text-white">Assign Tasks</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card border-start border-dark border-4 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Assigned Tasks</h5>
+                    <p class="card-text">View tasks assigned to the user.</p>
+                    <a href="/Admin/AssignedTasksList" class="btn btn-dark">User's Tasks</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger mt-4" role="alert">
+        <h4 class="alert-heading">Access Denied</h4>
+        <p>You do not have permission to access this page.</p>
+    </div>
+}

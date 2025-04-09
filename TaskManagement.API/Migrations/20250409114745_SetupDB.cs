@@ -41,7 +41,8 @@ namespace TaskManagement.API.Migrations
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Mobile = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProfilePicPath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ProfilePicPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -74,6 +75,11 @@ namespace TaskManagement.API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "DateOfBirth", "Email", "Gender", "Mobile", "Name", "Password", "ProfilePicPath", "Role" },
+                values: new object[] { 1, new DateTime(2025, 9, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), "admin@gmail.com", "Male", "9999999999", "Admin", "Admin@123", null, "Admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskAssignment_TaskId",

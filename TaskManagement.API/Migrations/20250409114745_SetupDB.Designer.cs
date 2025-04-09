@@ -12,8 +12,8 @@ using TaskManagement.API.Data;
 namespace TaskManagement.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250408110032_ChangeTypeRole")]
-    partial class ChangeTypeRole
+    [Migration("20250409114745_SetupDB")]
+    partial class SetupDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,6 +134,19 @@ namespace TaskManagement.API.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DateOfBirth = new DateTime(2025, 9, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "admin@gmail.com",
+                            Gender = "Male",
+                            Mobile = "9999999999",
+                            Name = "Admin",
+                            Password = "Admin@123",
+                            Role = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("TaskManagement.API.Models.TaskAssignmentModel", b =>

@@ -43,6 +43,7 @@ namespace TaskManagement.Web.Controllers
             ViewBag.PendingTasks = pending;
             ViewBag.CompletedTasks = completed;
 
+            ViewBag.Role = HttpContext.Session.GetString("Role");
             return View(tasks);
         }
 

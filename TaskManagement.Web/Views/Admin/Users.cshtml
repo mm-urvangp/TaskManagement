@@ -1,9 +1,23 @@
 ﻿@using TaskManagement.Web.Models.DTOs
 @model List<UserDto>
-<h2>Users</h2>
-<table class="table">
-    <thead>
-        <tr><th>Name</th><th>Email</th><th>Role</th></tr>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2 class="mb-3">Users</h2>
+
+<a asp-action="CreateUser" class="btn btn-primary mb-3">Create New User</a>
+
+<table class="table table-bordered table-striped align-middle shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            @* <th>Profile Image</th> *@
+            <th>Actions</th>
+        </tr>
     </thead>
     <tbody>
         @foreach (var user in Model)
@@ -12,6 +26,16 @@
                 <td>@user.Name</td>
                 <td>@user.Email</td>
                 <td>@user.Role</td>
+                @* <td>
+                    <img src="@user.ProfilePicPath" alt="Profile Picture" width="60" height="60" style="object-fit: cover;" />
+
+                </td> *@
+                <td>
+                    <a asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete this user?')">Delete</button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>

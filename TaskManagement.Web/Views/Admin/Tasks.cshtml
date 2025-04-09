@@ -2,8 +2,8 @@
 @model List<TaskDto>
 <h2>Tasks</h2>
 <a href="/Admin/CreateTask">Create New Task</a>
-<table class="table">
-    <thead>
+<table class="table table-bordered table-striped align-middle shadow-sm">
+    <thead class="table-dark">
         <tr><th>Title</th><th>Description</th><th>Status</th><th>Actions</th></tr>
     </thead>
     <tbody>
@@ -13,9 +13,12 @@
                 <td>@task.TaskTitle</td>
                 <td>@task.Description</td>
                 <td>@task.Status</td>
+
                 <td>
-                    <a href="/Admin/EditTask/@task.Id">Edit</a> |
-                    <a href="/Admin/DeleteTask/@task.Id">Delete</a>
+                    <a asp-action="EditTask" asp-route-id="@task.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <form asp-action="DeleteTask" asp-route-id="@task.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete this user?')">Delete</button>
+                    </form>
                 </td>
             </tr>
         }

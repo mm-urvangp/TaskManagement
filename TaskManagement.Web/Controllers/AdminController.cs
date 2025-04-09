@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using TaskManagement.Web.Models.DTOs;
 
@@ -25,9 +27,24 @@ namespace TaskManagement.Web.Controllers
             return client;
         }
 
-        public IActionResult Dashboard() => View();
+        #region Dashboard
 
-        // -------------------------- TASKS --------------------------
+        public IActionResult Dashboard()
+        {
+            if (HttpContext.Session.GetString("Role") == "Admin")
+            {
+                ViewBag.Role = "Admin";
+            }
+            else
+            {
+                ViewBag.Role = "User";
+            }
+            return View();
+        }
+
+        #endregion
+
+        #region TASKS 
 
         public async Task<IActionResult> Tasks()
         {
@@ -43,6 +60,9 @@ namespace TaskManagement.Web.Controllers
         public async Task<IActionResult> CreateTask(TaskDto model)
         {
             var client = CreateClient();
+
+            if (model.UploadFile != null && model.UploadFile.Length > 2 * 1024 * 1024)
+                return BadRequest("File size must be less than 2MB.");
 
             using var content = new MultipartFormDataContent();
 
@@ -76,13 +96,16 @@ namespace TaskManagement.Web.Controllers
             var client = CreateClient();
             var response = await client.GetAsync($"{_config["ApiBaseUrl"]}/Tasks/{id}");
             var task = await response.Content.ReadFromJsonAsync<TaskDto>();
-            return View(task);
+            return View("CreateTask", task);
         }
 
         [HttpPost]
         public async Task<IActionResult> EditTask(TaskDto model)
         {
             var client = CreateClient();
+
+            if (model.UploadFile != null && model.UploadFile.Length > 2 * 1024 * 1024)
+                return BadRequest("File size must be less than 2MB.");
 
             using var content = new MultipartFormDataContent();
 
@@ -115,8 +138,9 @@ namespace TaskManagement.Web.Controllers
             var response = await client.DeleteAsync($"{_config["ApiBaseUrl"]}/Tasks/{id}");
             return RedirectToAction("Tasks");
         }
+        #endregion
 
-        // -------------------------- USERS --------------------------
+        #region USERS 
 
         public async Task<IActionResult> Users()
         {
@@ -126,7 +150,110 @@ namespace TaskManagement.Web.Controllers
             return View(users);
         }
 
-        // ---------------------- ASSIGN TASK ------------------------
+        public IActionResult CreateUser()
+        {
+            return View();
+        }
+
+        // POST: CreateUser
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(UserDto model)
+        {
+            var client = CreateClient();
+
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(model.Name ?? ""), "Name");
+            content.Add(new StringContent(model.Email ?? ""), "Email");
+            content.Add(new StringContent(model.Password ?? ""), "Password");
+            content.Add(new StringContent(model.Gender ?? ""), "Gender");
+            content.Add(new StringContent(model.Mobile ?? ""), "Mobile");
+            content.Add(new StringContent(model.Role ?? ""), "Role");
+            if (model.DateOfBirth != null)
+                content.Add(new StringContent(model.DateOfBirth.ToString("yyyy-MM-dd")), "DateOfBirth");
+
+            if (model.ProfilePic != null && model.ProfilePic.Length > 0)
+            {
+                var fileContent = new StreamContent(model.ProfilePic.OpenReadStream());
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(model.ProfilePic.ContentType);
+                content.Add(fileContent, "ProfilePic", model.ProfilePic.FileName);
+            }
+
+            var response = await client.PostAsync($"{_config["ApiBaseUrl"]}/Users", content);
+
+            if (response.IsSuccessStatusCode)
+                return RedirectToAction("Users");
+
+            ModelState.AddModelError(string.Empty, "Something went wrong!");
+            return View(model);
+        }
+
+        // GET: EditUser
+        public async Task<IActionResult> EditUser(int id)
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"{_config["ApiBaseUrl"]}/Users/{id}");
+            var user = await response.Content.ReadFromJsonAsync<UserDto>();
+            if (user != null)
+                ViewBag.Age = DateTime.Now.Year - user.DateOfBirth.Year;
+            return View("CreateUser", user);
+        }
+
+        // POST: EditUser
+        [HttpPost]
+        public async Task<IActionResult> EditUser(UserDto model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var client = CreateClient();
+
+            using var content = new MultipartFormDataContent();
+            content.Add(new StringContent(model.Id.ToString()), "Id");
+            content.Add(new StringContent(model.Name ?? ""), "Name");
+            content.Add(new StringContent(model.Email ?? ""), "Email");
+            content.Add(new StringContent(model.Password ?? ""), "Password");
+            content.Add(new StringContent(model.Gender ?? ""), "Gender");
+            content.Add(new StringContent(model.Mobile ?? ""), "Mobile");
+            content.Add(new StringContent(model.Role ?? ""), "Role");
+            if (model.DateOfBirth != null)
+                content.Add(new StringContent(model.DateOfBirth.ToString("yyyy-MM-dd")), "DateOfBirth");
+
+            if (model.ProfilePic != null && model.ProfilePic.Length > 0)
+            {
+                var fileContent = new StreamContent(model.ProfilePic.OpenReadStream());
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(model.ProfilePic.ContentType);
+                content.Add(fileContent, "ProfilePic", model.ProfilePic.FileName);
+            }
+
+            var response = await client.PutAsync($"{_config["ApiBaseUrl"]}/Users/{model.Id}", content);
+
+            if (response.IsSuccessStatusCode)
+                return RedirectToAction("Users");
+
+            ModelState.AddModelError(string.Empty, "Update failed.");
+            return View("CreateUser", model);
+        }
+
+        // POST: DeleteUser
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var client = CreateClient();
+            var response = await client.DeleteAsync($"{_config["ApiBaseUrl"]}/Users/{id}");
+
+            return RedirectToAction("Users");
+        }
+
+        #endregion
+
+        #region ASSIGN TASK 
+
+        public async Task<IActionResult> AssignedTasksList()
+        {
+            var client = CreateClient();
+            var response = await client.GetAsync($"{_config["ApiBaseUrl"]}/TaskAssignments");
+            var tasks = await response.Content.ReadFromJsonAsync<List<TaskAssignmentDto>>();
+            return View(tasks);
+        }
 
         public async Task<IActionResult> AssignTask()
         {
@@ -164,7 +291,7 @@ namespace TaskManagement.Web.Controllers
             if (response.IsSuccessStatusCode)
             {
                 TempData["Success"] = "Task assigned successfully.";
-                return RedirectToAction("Tasks");
+                return RedirectToAction("Dashboard");
             }
 
             // Reload users and tasks in case of failure (needed for ViewBag)
@@ -177,5 +304,7 @@ namespace TaskManagement.Web.Controllers
             ModelState.AddModelError("", "Failed to assign task");
             return View();
         }
+
+        #endregion
     }
 }

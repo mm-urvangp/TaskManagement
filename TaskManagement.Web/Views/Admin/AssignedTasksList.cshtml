@@ -1,0 +1,74 @@
+﻿@using TaskManagement.Web.Models.DTOs
+@model List<TaskAssignmentDto>
+
+@{
+    ViewData["Title"] = "Assigned Tasks List";
+}
+
+<h2 class="mb-4">Assigned Tasks</h2>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Task Title</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>User</th>
+                <th>Assigned Date</th>
+                <th>Due Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int index = 1;
+                foreach (var task in Model)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>@task.TaskTitle</td>
+                        <td>
+                            <span class="badge bg-@GetPriorityBadge(task.Priority)">
+                                @task.Priority
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-@GetStatusBadge(task.Status)">
+                                @task.Status
+                            </span>
+                        </td>
+                        <td>@task.UserName</td>
+                        <td>@task.AssignedDate.ToString("dd MMM yyyy")</td>
+                        <td>@task.DueDate.ToString("dd MMM yyyy")</td>
+                    </tr>
+                    index++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No assigned tasks found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@functions {
+    string GetPriorityBadge(string priority) => priority switch
+    {
+        "High" => "danger",
+        "Medium" => "warning",
+        "Low" => "secondary",
+        _ => "light"
+    };
+
+    string GetStatusBadge(string status) => status switch
+    {
+        "Completed" => "success",
+        "Pending" => "warning",
+        _ => "secondary"
+    };
+}

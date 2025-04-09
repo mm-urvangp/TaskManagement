@@ -44,5 +44,15 @@ namespace TaskManagement.Web.Controllers
             ViewBag.Error = "Invalid login";
             return View();
         }
+
+        public async Task<IActionResult> LogOut()
+        {
+            HttpContext.Session.Remove("JWToken");
+            HttpContext.Session.Remove("UserId");
+            HttpContext.Session.Remove("Role");
+
+            return RedirectToAction("Login");
+        }
+
     }
 }
