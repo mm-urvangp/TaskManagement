@@ -10,7 +10,6 @@ namespace TaskManagement.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class TasksController : ControllerBase
     {
         private readonly ITaskRepository _taskRepo;
